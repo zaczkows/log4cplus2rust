@@ -48,6 +48,7 @@ fn main() {
 
     println!("cargo:rerun-if-changed={}", "src/log4cplus2c.cpp");
     println!("cargo:rerun-if-changed={}", "src/log4cplus2c.h");
+
     println!("cargo:rustc-link-search={}", out_path.to_str().unwrap());
     println!("cargo:rustc-link-lib=static=log4cplus2c");
     println!("cargo:rustc-link-search={}", lib_path);

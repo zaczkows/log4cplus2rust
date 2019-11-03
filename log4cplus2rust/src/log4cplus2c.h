@@ -1,3 +1,5 @@
+#pragma once
+
 extern "C" {
 typedef void (*log_callback)(void *data, const char *const name);
 
