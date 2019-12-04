@@ -1,17 +1,35 @@
-#![allow(dead_code)]
-#![allow(non_camel_case_types)]
+mod bindings;
+// use log4cplus2rust;
 
-include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
+#[cfg(test)]
+mod tests {
+    // use super::*;
+    use std::sync::Once;
 
-#[test]
-fn check_basic_logging() {
-    unsafe { setup_logging() };
-}
+    static INIT: Once = Once::new();
 
-#[test]
-fn check_basic_setup() {
-    unsafe {
-        setup_logging();
-        run_example();
+    /// Setup function that is only run once, even if called multiple times.
+    fn setup_test() {
+        INIT.call_once(|| {
+            env_logger::init();
+        });
+    }
+
+    #[test]
+    fn check_basic_setup() {
+        setup_test();
+        unsafe {
+            crate::bindings::setup_logging();
+            crate::bindings::run_example();
+        }
+    }
+
+    #[test]
+    fn check_basic_logging() {
+        setup_test();
+        unsafe { crate::bindings::setup_logging() };
+        log4cplus2rust::redirect_log4cplus_logs();
+        unsafe { crate::bindings::run_example() };
+        log4cplus2rust::remove_redirection();
     }
 }

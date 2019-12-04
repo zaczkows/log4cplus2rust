@@ -8,8 +8,11 @@ pub fn remove_redirection() {}
 
 #[cfg(test)]
 mod tests {
+    use super::*;
+
     #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
+    fn compiles_and_links() {
+        redirect_log4cplus_logs();
+        remove_redirection();
     }
 }

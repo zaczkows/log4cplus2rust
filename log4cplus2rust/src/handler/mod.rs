@@ -1,6 +1,7 @@
 mod bindings;
 
 use lazy_static::lazy_static;
+use log;
 use std::sync::Mutex;
 
 #[derive(Default, Debug)]
@@ -19,11 +20,14 @@ lazy_static! {
 
 unsafe extern "C" fn logger_callback_helper(
     target: *mut std::os::raw::c_void,
-    _name: *const std::os::raw::c_char,
+    name: *const std::os::raw::c_char,
 ) {
     if target.is_null() {
         panic!("Something went terribly wrong!");
     }
+
+    let msg = std::ffi::CStr::from_ptr(name);
+    log::warn!("{}", msg.to_str().unwrap());
 }
 
 pub fn setup_log_redirection() {

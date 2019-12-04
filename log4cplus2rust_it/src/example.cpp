@@ -2,6 +2,8 @@
 #include <log4cplus/configurator.h>
 #include <log4cplus/loggingmacros.h>
 
+#include "example.h"
+
 void
 setup_logging()
 {
@@ -24,5 +26,11 @@ run_example()
     log4cplus::Logger iex = log4cplus::Logger::getInstance("iex");
     log4cplus::Logger uex = log4cplus::Logger::getInstance("uex");
     LOG4CPLUS_DEBUG(dex, "TEST DEBUG MSG");
+    LOG4CPLUS_INFO(dex, "TEST DEBUG MSG");
+    LOG4CPLUS_WARN(dex, "TEST DEBUG MSG");
+    LOG4CPLUS_ERROR(dex, "TEST DEBUG MSG");
     LOG4CPLUS_DEBUG(iex, "TEST INFO MSG");
+    LOG4CPLUS_INFO(iex, "TEST INFO MSG");
+    LOG4CPLUS_WARN(iex, "TEST INFO MSG");
+    LOG4CPLUS_ERROR(iex, "TEST INFO MSG");
 }

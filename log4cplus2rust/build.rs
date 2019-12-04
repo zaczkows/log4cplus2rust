@@ -20,10 +20,13 @@ fn main() {
         cc::Build::new()
             .cpp(true)
             .flag("-std=c++11")
+            .flag("-Wall")
+            .flag("-Wextra")
+            .flag("-Wl,--exclude-libs,ALL")
             .flag(&format!("-I{}", include_path))
             // .flag(&format!("-L{}", lib_path))
             // .flag(&format!("-l{}", lib_name))
-            .file("src/log4cplus2c.cpp")
+            .file("src/handler/log4cplus2c.cpp")
             .shared_flag(false)
             .static_flag(true)
             .compile("log4cplus2c");
@@ -33,7 +36,7 @@ fn main() {
     let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
     {
         let bindings = bindgen::Builder::default()
-            .header("src/log4cplus2c.h")
+            .header("src/handler/log4cplus2c.h")
             .rust_target(bindgen::RustTarget::Stable_1_33)
             .clang_args(["-std=c++11", "-x", "c++"].iter())
             .whitelist_function("add_rust_logger_handler")
@@ -46,12 +49,12 @@ fn main() {
             .expect("Couldn't write bindings!");
     }
 
-    println!("cargo:rerun-if-changed={}", "src/log4cplus2c.cpp");
-    println!("cargo:rerun-if-changed={}", "src/log4cplus2c.h");
+    println!("cargo:rerun-if-changed={}", "src/handler/log4cplus2c.cpp");
+    println!("cargo:rerun-if-changed={}", "src/handler/log4cplus2c.h");
 
-    println!("cargo:rustc-link-search={}", out_path.to_str().unwrap());
-    println!("cargo:rustc-link-lib=static=log4cplus2c");
-    println!("cargo:rustc-link-search={}", lib_path);
+    // println!("cargo:rustc-link-search=native={}", out_path.to_str().unwrap());
+    // println!("cargo:rustc-link-lib=static=log4cplus2c");
+    println!("cargo:rustc-link-search=native={}", lib_path);
     println!("cargo:rustc-link-lib=dylib={}", lib_name);
     println!("cargo:rustc-flags=-l dylib=stdc++");
 }
