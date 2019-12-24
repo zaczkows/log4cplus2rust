@@ -25,12 +25,14 @@ run_example()
     log4cplus::Logger dex = log4cplus::Logger::getInstance("dex");
     log4cplus::Logger iex = log4cplus::Logger::getInstance("iex");
     log4cplus::Logger uex = log4cplus::Logger::getInstance("uex");
+    LOG4CPLUS_TRACE(dex, "TEST TRACE MSG");
     LOG4CPLUS_DEBUG(dex, "TEST DEBUG MSG");
-    LOG4CPLUS_INFO(dex, "TEST DEBUG MSG");
-    LOG4CPLUS_WARN(dex, "TEST DEBUG MSG");
-    LOG4CPLUS_ERROR(dex, "TEST DEBUG MSG");
-    LOG4CPLUS_DEBUG(iex, "TEST INFO MSG");
+    LOG4CPLUS_INFO(dex, "TEST INFO MSG");
+    LOG4CPLUS_WARN(dex, "TEST WARN MSG");
+    LOG4CPLUS_ERROR(dex, "TEST ERROR MSG");
+    LOG4CPLUS_TRACE(iex, "TEST TRACE MSG");
+    LOG4CPLUS_DEBUG(iex, "TEST DEBUG MSG");
     LOG4CPLUS_INFO(iex, "TEST INFO MSG");
-    LOG4CPLUS_WARN(iex, "TEST INFO MSG");
-    LOG4CPLUS_ERROR(iex, "TEST INFO MSG");
+    LOG4CPLUS_WARN(iex, "TEST WARN MSG");
+    LOG4CPLUS_ERROR(iex, "TEST ERROR MSG");
 }
