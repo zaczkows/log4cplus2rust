@@ -5,12 +5,12 @@
 #include <log4cplus/spi/loggingevent.h>
 
 #include <list>
+#include <mutex>
 
 struct RustForwardingAppender : log4cplus::Appender
 {
-    RustForwardingAppender(log_callback& callback, void* callback_data)
+    RustForwardingAppender(log_callback& callback)
       : m_callback(callback)
-      , m_callback_data(callback_data)
     {}
 
     ~RustForwardingAppender() override { destructorImpl(); }
@@ -19,8 +19,15 @@ struct RustForwardingAppender : log4cplus::Appender
 
     void append(const log4cplus::spi::InternalLoggingEvent& event) override
     {
-        auto& msg = event.getMessage();
-        m_callback(m_callback_data, event.getLogLevel(), msg.c_str());
+        LogInfoDetails details;
+        details.level = event.getLogLevel();
+        details.logger = event.getLoggerName().c_str();
+        details.timestamp = static_cast<double>(event.getTimestamp().usec()) / 1000000.0;
+        details.file = event.getFile().c_str();
+        details.function = event.getFunction().c_str();
+        details.line = event.getLine();
+        details.msg = event.getMessage().c_str();
+        m_callback(&details);
     }
 
     struct AppData
@@ -30,33 +37,36 @@ struct RustForwardingAppender : log4cplus::Appender
           , appender(a)
         {}
 
-        log4cplus::Logger& logger;
+        log4cplus::Logger logger;
         log4cplus::SharedAppenderPtr appender;
     };
 
     void add_appender(AppData&& data) { m_appenders.emplace_back(data); }
 
+    std::list<AppData>& appenders() { return m_appenders; }
+
   private:
     log_callback m_callback;
-    void* m_callback_data;
-    // Original log4cplus appender we are substituding for
+    // Original log4cplus appender we are substituting for
     std::list<AppData> m_appenders;
 };
 
+static std::mutex s_mutex;
 static log4cplus::SharedAppenderPtr s_appender;
 
 bool
-add_rust_logger_handler(log_callback callback, void* callback_data)
+add_rust_logger_handler(log_callback callback)
 {
     using namespace log4cplus;
 
+    std::lock_guard<std::mutex> _guard(s_mutex);
     if (!callback) {
         return false;
     }
 
     RustForwardingAppender* rfa = nullptr;
     if (!s_appender) {
-        rfa = new RustForwardingAppender(callback, callback_data);
+        rfa = new RustForwardingAppender(callback);
         s_appender = log4cplus::SharedAppenderPtr(rfa);
         s_appender->setName(LOG4CPLUS_TEXT("CPP2RUST_APPENDER"));
     }
@@ -84,4 +94,15 @@ add_rust_logger_handler(log_callback callback, void* callback_data)
 
 void
 remove_rust_logger_handler()
-{}
+{
+    std::lock_guard<std::mutex> _guard(s_mutex);
+    if (!s_appender) {
+        return;
+    }
+
+    for (RustForwardingAppender::AppData& app_data :
+         static_cast<RustForwardingAppender*>(s_appender.get())->appenders()) {
+        app_data.logger.addAppender(app_data.appender);
+        app_data.logger.removeAppender(s_appender);
+    }
+}

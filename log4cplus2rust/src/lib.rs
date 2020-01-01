@@ -1,10 +1,12 @@
 mod handler;
 
-pub fn redirect_log4cplus_logs() {
+pub fn setup_log4cplus_redirection() {
     handler::setup_log_redirection();
 }
 
-pub fn remove_redirection() {}
+pub fn remove_log4cplus_redirection() {
+    handler::remove_log_redirection();
+}
 
 #[cfg(test)]
 mod tests {
@@ -12,7 +14,7 @@ mod tests {
 
     #[test]
     fn compiles_and_links() {
-        redirect_log4cplus_logs();
-        remove_redirection();
+        setup_log4cplus_redirection();
+        remove_log4cplus_redirection();
     }
 }

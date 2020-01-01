@@ -11,9 +11,9 @@ setup_logging()
     std::string log_props = "log4cplus.appender.CL=log4cplus::ConsoleAppender\n"
                             "log4cplus.appender.CL.ImmediateFlush=true\n"
                             "log4cplus.appender.CL.layout=log4cplus::PatternLayout\n"
-                            "log4cplus.appender.CL.layout.ConversionPattern=[ %-5p] %m (%l)%n\n"
-                            "log4cplus.logger.dex=DEBUG, CL\n"
-                            "log4cplus.logger.iex=INFO,CL\n";
+                            "log4cplus.appender.CL.layout.ConversionPattern=[ %-5p] <%c> %m (%l)%n\n"
+                            "log4cplus.logger.dex=TRACE, CL\n"
+                            "log4cplus.logger.iex=TRACE,CL\n";
     std::istringstream props_stream(log_props);
     log4cplus::PropertyConfigurator configurator(props_stream);
     configurator.configure();

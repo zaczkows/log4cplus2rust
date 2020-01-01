@@ -40,6 +40,7 @@ fn main() {
             .rust_target(bindgen::RustTarget::Stable_1_33)
             .clang_args(["-std=c++11", "-x", "c++"].iter())
             .whitelist_function("add_rust_logger_handler")
+            .whitelist_function("remove_rust_logger_handler")
             .generate()
             .expect("Failed to generate bindings");
 
